@@ -62,6 +62,7 @@ adminRouter.post("/getChat", (req, res) => {
         const chatData = chat.filter((c) => c.senderBookingId === bookingId || c.receiverBookingId === bookingId || c.receiverType === 'all');
         const chatTemplate:ChatTemplate[] = chatData.map((c) => {
             return {
+                id: c.id,
                 messageText: c.messageText,
                 direction: c.senderBookingId === bookingId ? 'send' : 'receive',
                 sentAt: c.sentAt
@@ -71,9 +72,10 @@ adminRouter.post("/getChat", (req, res) => {
     }
     if(req.body.conductorId){
         const conductorId = req.body.conductorId;
-        const chatData = chat.filter((c) => c.senderConductorId === conductorId || c.receiverConductorId === conductorId || c.receiverType === 'all');
+        const chatData = chat.filter((c) => c.senderConductorId === conductorId || c.receiverConductorId === conductorId);
         const chatTemplate:ChatTemplate[] = chatData.map((c) => {
             return {
+                id: c.id,
                 messageText: c.messageText,
                 direction: c.senderConductorId === conductorId ? 'send' : 'receive',
                 sentAt: c.sentAt
