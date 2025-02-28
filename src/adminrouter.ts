@@ -1,14 +1,16 @@
 import { Router } from "express";
 import { BookingId, Bus, Chat, ChatResponse, Conductor, Journey } from "./data/types";
 import { generateUID } from "./handlers";
+import jwt from "jsonwebtoken";
+import { SECRET_KEY } from ".";
 
 export const adminRouter = Router();
 
-const bus:Bus[] = [];
-const bookingId:BookingId[] = [];
-const conductor:Conductor[] = [];
-const journey:Journey[] = [];
-const chat:Chat[] = [];
+export const bus:Bus[] = [];
+export const bookingId:BookingId[] = [];
+export const conductor:Conductor[] = [];
+export const journey:Journey[] = [];
+export const chat:Chat[] = [];
 
 adminRouter.get("/", (req, res) => {
   res.send("Admin Home");
@@ -35,6 +37,20 @@ adminRouter.post("/conductor", (req, res) => {
   const newConductor:Conductor = req.body;
   conductor.push(newConductor);
   res.send(newConductor);
+});
+//login conductor
+adminRouter.post("/conductor/login", (req, res) => {
+  const {conductorId,password} = req.body;
+  const foundConductor = conductor.find((c) => c.id === conductorId);
+  if(!foundConductor){
+    res.status(400).json({ error: 'Invalid conductor ID',success:false });
+  }
+  if(foundConductor!.password !== password){
+    res.status(400).json({ error: 'Invalid password',success:false });
+  }
+  const token = jwt.sign({conductorId:foundConductor?.id, busId:foundConductor?.busId}, SECRET_KEY,{ expiresIn: '1h' });
+  res.send({success:true,token});
+
 });
 
 //create journey

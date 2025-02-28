@@ -11,6 +11,8 @@ router.get('/', (req: Request, res: Response) => {
     res.send('Hello, world!');
 });
 
+
+
 router.post('/getBusRoutes',getBusRoutesHandler);
 
 export const logWebsoket =  (wss : Server) => {
