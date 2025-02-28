@@ -34,3 +34,11 @@ export function streamBusLocation(busId: string | string[] | undefined, send: (d
     }, 1000);
 }
 //http://207.211.188.157:4578/api ws://localhost:3000/busLocation?busId=123
+
+export function generateUID() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        const r = Math.random() * 16 | 0;
+        const v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+    });
+}

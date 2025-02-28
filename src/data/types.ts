@@ -23,19 +23,24 @@ export interface Journey{
 }
 
 export interface Chat {
-    id: string;
+    id?: string;
     senderType: 'user' | 'conductor';
     senderBookingId?: string;
     senderConductorId?: string;
     receiverType: 'user' | 'all';
     receiverBookingId?: string;
     receiverConductorId?: string;
+    busId?: string;
     messageText: string;
     sentAt: Date;
 }
 
-export interface ChatTemplate {
-    messageText: string;
-    direction: 'send' | 'receive';
-    sentAt: Date;
+export interface ChatResponse{
+    id:string;
+    messageText:string;
+    sentAt:Date;
+    direction:'sent' | 'received';
+    from : 'user' | 'conductor';
+    bookingId?:string;
+    conductorId?:string;
 }

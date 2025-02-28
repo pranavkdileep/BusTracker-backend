@@ -1,5 +1,6 @@
 import { Router } from "express";
-import { BookingId, Bus, Chat, ChatTemplate, Conductor, Journey } from "./data/types";
+import { BookingId, Bus, Chat, ChatResponse, Conductor, Journey } from "./data/types";
+import { generateUID } from "./handlers";
 
 export const adminRouter = Router();
 
@@ -22,9 +23,11 @@ adminRouter.post("/bus", (req, res) => {
 
 //create bookingId
 adminRouter.post("/bookingId", (req, res) => {
-  const newBookingId:BookingId = req.body;
+  const busId = req.body.busId;
+  const Id = generateUID();
+  const newBookingId:BookingId = {id:Id, busId:busId};
   bookingId.push(newBookingId);
-  res.send(newBookingId);
+  res.send(bookingId);
 });
 
 //create conductor
@@ -50,37 +53,69 @@ adminRouter.get("/bus/:bookingId", (req, res) => {
 
 //chat
 adminRouter.post("/chat", (req, res) => {
-    const newChat = req.body;
-    chat.push(newChat);
-    res.send(newChat);
+  let data:Chat = req.body;
+  data.id = generateUID();
+  data.sentAt = new Date();
+  if(data.senderType === 'user'){
+    const foundBooking = bookingId.find((b) => b.id === data.senderBookingId);
+    if(!foundBooking){
+       res.status(400).json({ error: 'Invalid booking ID' });
+    }
+
+    const foundConductor = conductor.find((c) => c.busId === foundBooking!.busId);
+    if(!foundConductor){
+      console.log(`busId: ${foundBooking!.busId} and cunductorlist ${conductor}`);
+       res.status(400).json({ error: 'No conductor found for this bus' });
+    }
+
+    data.receiverConductorId = foundConductor!.id;
+    data.busId = foundBooking!.busId;
+  }else{
+    let busId = conductor.find((c) => c.id === data.senderConductorId);
+    data.busId = busId!.busId;
+  }
+  chat.push(data);
+  res.send(data);
 });
 
 //retrive chat for booking id sended and received in order of time //retrive chat for conductor id sended and received in order of time
 adminRouter.post("/getChat", (req, res) => {
-    if(req.body.bookingId){
-        const bookingId = req.body.bookingId;
-        const chatData = chat.filter((c) => c.senderBookingId === bookingId || c.receiverBookingId === bookingId || c.receiverType === 'all');
-        const chatTemplate:ChatTemplate[] = chatData.map((c) => {
-            return {
-                id: c.id,
-                messageText: c.messageText,
-                direction: c.senderBookingId === bookingId ? 'send' : 'receive',
-                sentAt: c.sentAt
-            }
+    if(req.body.bookId){
+        const bookId = req.body.bookId;
+        const busId = bookingId.find((b) => b.id === bookId);
+        let Responsedata:ChatResponse[] = [];
+        const chatData = chat.filter((c) => {
+            return c.senderBookingId === bookId || c.receiverBookingId === bookId || (c.senderType === 'conductor' && c.busId === busId?.busId);
         });
-        res.send(chatTemplate);
+        chatData.forEach((c) => {
+            let chatResponse:ChatResponse = {
+                id:c.id!,
+                messageText:c.messageText,
+                sentAt:c.sentAt,
+                direction:c.senderType === 'user' ? 'sent' : 'received',
+                from:c.senderType,
+            };
+            Responsedata.push(chatResponse);
+        });
+        res.send(Responsedata);
     }
     if(req.body.conductorId){
         const conductorId = req.body.conductorId;
-        const chatData = chat.filter((c) => c.senderConductorId === conductorId || c.receiverConductorId === conductorId);
-        const chatTemplate:ChatTemplate[] = chatData.map((c) => {
-            return {
-                id: c.id,
-                messageText: c.messageText,
-                direction: c.senderConductorId === conductorId ? 'send' : 'receive',
-                sentAt: c.sentAt
-            }
+        let Responsedata:ChatResponse[] = [];
+        const chatData = chat.filter((c) => {
+            return c.senderConductorId === conductorId || c.receiverConductorId === conductorId;
         });
-        res.send(chatTemplate);
+        chatData.forEach((c) => {
+            let chatResponse:ChatResponse = {
+                id:c.id!,
+                messageText:c.messageText,
+                sentAt:c.sentAt,
+                direction:c.senderType === 'conductor' ? 'sent' : 'received',
+                from:c.senderType,
+                bookingId:c.senderBookingId,
+            };
+            Responsedata.push(chatResponse);
+        });
+        res.send(Responsedata);
     }
 });
