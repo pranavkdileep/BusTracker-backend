@@ -39,7 +39,7 @@ export interface ChatResponse{
     id:string;
     messageText:string;
     sentAt:Date;
-    direction:'sent' | 'received';
+    direction:'send' | 'received';
     from : 'user' | 'conductor';
     bookingId?:string;
     conductorId?:string;

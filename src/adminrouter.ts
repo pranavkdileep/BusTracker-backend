@@ -92,7 +92,7 @@ adminRouter.post("/getChat", (req, res) => {
                 id:c.id!,
                 messageText:c.messageText,
                 sentAt:c.sentAt,
-                direction:c.senderType === 'user' ? 'sent' : 'received',
+                direction:c.senderType === 'user' ? 'send' : 'received',
                 from:c.senderType,
             };
             Responsedata.push(chatResponse);
@@ -110,7 +110,7 @@ adminRouter.post("/getChat", (req, res) => {
                 id:c.id!,
                 messageText:c.messageText,
                 sentAt:c.sentAt,
-                direction:c.senderType === 'conductor' ? 'sent' : 'received',
+                direction:c.senderType === 'conductor' ? 'send' : 'received',
                 from:c.senderType,
                 bookingId:c.senderBookingId,
             };
