@@ -101,7 +101,7 @@ adminRouter.post("/getChat", (req, res) => {
         const busId = bookingId.find((b) => b.id === bookId);
         let Responsedata:ChatResponse[] = [];
         const chatData = chat.filter((c) => {
-            return c.senderBookingId === bookId || c.receiverBookingId === bookId || (c.senderType === 'conductor' && c.busId === busId?.busId);
+            return c.senderBookingId === bookId || c.receiverBookingId === bookId || (c.senderType === 'conductor' && c.busId === busId?.busId && c.receiverType === 'all');
         });
         chatData.forEach((c) => {
             let chatResponse:ChatResponse = {
