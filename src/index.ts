@@ -9,7 +9,7 @@ import { conductorRouter } from './conductorroutes';
 const app = express()
 const server = http.createServer(app);
 const port = 3000
-export const SECRET_KEY = 'your-secret-key';
+export const SECRET_KEY = 'your-secret-keygrbrgbgbrgbbtbtbewwfetghuyjiiop345643gfb';
 
 const authMedileware = expressjwt({
   secret: SECRET_KEY,
