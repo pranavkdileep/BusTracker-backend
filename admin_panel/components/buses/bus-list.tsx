@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import { useToast } from "@/components/ui/use-toast"
 
-export function BusList() {
+export function BusList({ loadTrigger }: { loadTrigger: boolean }) {
   const [buses, setBuses] = useState<Bus[]>([])
   const [loading, setLoading] = useState(true)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
@@ -29,7 +29,7 @@ export function BusList() {
 
   useEffect(() => {
     loadBuses()
-  }, [])
+  }, [loadTrigger])
 
   async function loadBuses() {
     setLoading(true)
@@ -120,7 +120,7 @@ export function BusList() {
                 <TableRow key={bus.id}>
                   <TableCell className="font-medium">{bus.id}</TableCell>
                   <TableCell>{bus.name}</TableCell>
-                  <TableCell>{bus.currentLocation}</TableCell>
+                  <TableCell>{bus.currentLocation ? bus.currentLocation : "Null"}</TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
                       <div className={`h-2 w-2 rounded-full ${getStatusColor(bus.state)}`} />

@@ -9,7 +9,7 @@ import { connection } from "./db"
 export type Bus = {
   id: string
   name: string
-  currentLocation: string
+  currentLocation?: string
   state: string
   speed: number
 }
@@ -17,7 +17,7 @@ export type Bus = {
 export type Conductor = {
   id: string
   name: string
-  busId: string
+  busid: string
   password: string
 }
 
@@ -123,61 +123,54 @@ async function authorize() {
 // Bus Actions
 export async function createBus(bus: Bus): Promise<Bus> {
   await authorize()
+  console.log("Creating bus", bus)
+  const sql = "INSERT INTO buses (id, name, state, speed) VALUES ($1, $2, $3, $4)"
+  const res = await connection.query(sql, [bus.id, bus.name, bus.state, bus.speed])
 
-  // In a real app, you would make a database call
-  // For demo purposes, we'll just return the bus with a simulated delay
-  await new Promise((resolve) => setTimeout(resolve, 500))
-
-  return bus
+  return res.rows[0]
 }
 
 export async function getBuses(): Promise<Bus[]> {
   await authorize()
-
-  // Simulated data for demonstration
-  await new Promise((resolve) => setTimeout(resolve, 500))
-
-  return [
-    { id: "bus1", name: "Bus 100", currentLocation: "Station A", state: "idle", speed: 0 },
-    { id: "bus2", name: "Bus 101", currentLocation: "Station B", state: "moving", speed: 60 },
-    { id: "bus3", name: "Bus 102", currentLocation: "Highway 1", state: "moving", speed: 75 },
-  ]
+  const sql = "SELECT * FROM buses"
+  const result = await connection.query(sql)
+  return result.rows
 }
 
 export async function deleteBus(id: string): Promise<void> {
   await authorize()
-
-  // Simulated deletion
-  await new Promise((resolve) => setTimeout(resolve, 500))
+  const conductorSql = "UPDATE conductors SET busid = NULL WHERE busid = $1"
+  await connection.query(conductorSql, [id])
+  const sql = "DELETE FROM buses WHERE id = $1"
+  await connection.query(sql, [id])
 }
 
 // Conductor Actions
 export async function createConductor(conductor: Conductor): Promise<Conductor> {
   await authorize()
-
-  // Simulated creation
-  await new Promise((resolve) => setTimeout(resolve, 500))
+  const sql = "INSERT INTO conductors (id, name, busId, password) VALUES ($1, $2, $3, $4)"
+  const res = await connection.query(sql, [conductor.id, conductor.name, conductor.busid, conductor.password])
 
   return conductor
 }
 
 export async function getConductors(): Promise<Conductor[]> {
   await authorize()
+  const sql = "SELECT * FROM conductors"
+  const result = await connection.query(sql)
+  return result.rows
+}
 
-  // Simulated data
-  await new Promise((resolve) => setTimeout(resolve, 500))
-
-  return [
-    { id: "conductor1", name: "John Doe", busId: "bus1", password: "********" },
-    { id: "conductor2", name: "Jane Smith", busId: "bus2", password: "********" },
-  ]
+export async function updateConductor(conductor: Conductor): Promise<void> {
+  await authorize()
+  const sql = "UPDATE conductors SET name = $1, busId = $2, password = $3 WHERE id = $4"
+  await connection.query(sql, [conductor.name, conductor.busid, conductor.password, conductor.id])
 }
 
 export async function deleteConductor(id: string): Promise<void> {
   await authorize()
-
-  // Simulated deletion
-  await new Promise((resolve) => setTimeout(resolve, 500))
+  const sql = "DELETE FROM conductors WHERE id = $1"
+  await connection.query(sql, [id])
 }
 
 // Journey Actions

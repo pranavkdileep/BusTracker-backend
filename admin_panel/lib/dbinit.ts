@@ -9,3 +9,26 @@ const createAdminUserTable = async () => {
         )
       `);
 }
+
+const createBusTable = async () => {
+    await connection.query(`
+        CREATE TABLE IF NOT EXISTS buses (
+          id TEXT PRIMARY KEY,
+          name TEXT,
+          currentLocation TEXT,
+          state TEXT,
+          speed INTEGER
+        )
+      `);
+}
+
+const createConductorTable = async () => {
+    await connection.query(`
+        CREATE TABLE IF NOT EXISTS conductors (
+          id TEXT PRIMARY KEY,
+          name TEXT,
+          busId TEXT,
+          password TEXT
+        )
+      `);
+}

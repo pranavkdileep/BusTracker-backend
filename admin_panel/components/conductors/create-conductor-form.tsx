@@ -9,22 +9,23 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useToast } from "@/components/ui/use-toast"
-import { createConductor, getBuses, type Bus } from "@/lib/actions"
+import { Conductor, createConductor, getBuses, updateConductor, type Bus } from "@/lib/actions"
 
 const formSchema = z.object({
   id: z.string().min(1, "ID is required"),
   name: z.string().min(1, "Name is required"),
-  busId: z.string().min(1, "Bus assignment is required"),
+  busid: z.string().min(1, "Bus assignment is required"),
   password: z.string().min(6, "Password must be at least 6 characters"),
 })
 
 type FormValues = z.infer<typeof formSchema>
 
 interface CreateConductorFormProps {
-  onSuccess?: () => void
+  onSuccess?: () => void,
+  defaultValues?: Conductor,
 }
 
-export function CreateConductorForm({ onSuccess }: CreateConductorFormProps) {
+export function CreateConductorForm({ onSuccess,defaultValues }: CreateConductorFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [buses, setBuses] = useState<Bus[]>([])
   const { toast } = useToast()
@@ -32,10 +33,10 @@ export function CreateConductorForm({ onSuccess }: CreateConductorFormProps) {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      id: "",
-      name: "",
-      busId: "",
-      password: "",
+      id: defaultValues?.id ?? "",
+      name: defaultValues?.name ?? "",
+      busid: defaultValues?.busid ?? "",
+      password: defaultValues?.password ?? "",
     },
   })
 
@@ -59,7 +60,29 @@ export function CreateConductorForm({ onSuccess }: CreateConductorFormProps) {
   }, [toast])
 
   async function onSubmit(values: FormValues) {
-    setIsSubmitting(true)
+    if(defaultValues){
+      //perform update
+      setIsSubmitting(true)
+      try {
+        await updateConductor(values)
+        toast({
+          title: "Conductor updated",
+          description: `Conductor ${values.name} has been updated successfully.`,
+        })
+        form.reset()
+        onSuccess?.()
+      } catch (error) {
+        console.error("Failed to update conductor:", error)
+        toast({
+          title: "Failed to update conductor",
+          description: "There was an error updating the conductor. Please try again.",
+          variant: "destructive",
+        })
+      } finally {
+        setIsSubmitting(false)
+      }
+    }else{
+      setIsSubmitting(true)
     try {
       await createConductor(values)
       toast({
@@ -78,6 +101,7 @@ export function CreateConductorForm({ onSuccess }: CreateConductorFormProps) {
     } finally {
       setIsSubmitting(false)
     }
+    }
   }
 
   return (
@@ -90,7 +114,7 @@ export function CreateConductorForm({ onSuccess }: CreateConductorFormProps) {
             <FormItem>
               <FormLabel>Conductor ID</FormLabel>
               <FormControl>
-                <Input placeholder="conductor1" {...field} />
+                <Input disabled={defaultValues? true:false} placeholder="conductor1" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -113,7 +137,7 @@ export function CreateConductorForm({ onSuccess }: CreateConductorFormProps) {
 
         <FormField
           control={form.control}
-          name="busId"
+          name="busid"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Assigned Bus</FormLabel>
@@ -151,7 +175,7 @@ export function CreateConductorForm({ onSuccess }: CreateConductorFormProps) {
         />
 
         <Button type="submit" className="w-full" disabled={isSubmitting}>
-          {isSubmitting ? "Creating..." : "Create Conductor"}
+          {isSubmitting ? "Creating..." : "Submit"}
         </Button>
       </form>
     </Form>

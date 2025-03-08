@@ -14,7 +14,6 @@ import { createBus } from "@/lib/actions"
 const formSchema = z.object({
   id: z.string().min(1, "ID is required"),
   name: z.string().min(1, "Name is required"),
-  currentLocation: z.string().min(1, "Current location is required"),
   state: z.enum(["idle", "moving", "maintenance"]),
   speed: z.coerce.number().min(0, "Speed must be a positive number"),
 })
@@ -34,7 +33,6 @@ export function CreateBusForm({ onSuccess }: CreateBusFormProps) {
     defaultValues: {
       id: "",
       name: "",
-      currentLocation: "",
       state: "idle",
       speed: 0,
     },
@@ -93,19 +91,7 @@ export function CreateBusForm({ onSuccess }: CreateBusFormProps) {
           )}
         />
 
-        <FormField
-          control={form.control}
-          name="currentLocation"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Current Location</FormLabel>
-              <FormControl>
-                <Input placeholder="Station A" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        
 
         <FormField
           control={form.control}

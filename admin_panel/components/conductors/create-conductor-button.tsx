@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { CreateConductorForm } from "./create-conductor-form"
 
-export function CreateConductorButton() {
+export function CreateConductorButton({ onSubmitSuccess }: { onSubmitSuccess: () => void }) {
   const [open, setOpen] = useState(false)
 
   return (
@@ -17,7 +17,10 @@ export function CreateConductorButton() {
         <DialogHeader>
           <DialogTitle>Add New Conductor</DialogTitle>
         </DialogHeader>
-        <CreateConductorForm onSuccess={() => setOpen(false)} />
+        <CreateConductorForm onSuccess={() => {
+          setOpen(false)
+          onSubmitSuccess()
+        }} />
       </DialogContent>
     </Dialog>
   )

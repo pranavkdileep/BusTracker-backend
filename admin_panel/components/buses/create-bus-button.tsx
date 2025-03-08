@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { CreateBusForm } from "./create-bus-form"
 
-export function CreateBusButton() {
+export function CreateBusButton({ onSubmitSuccess }: { onSubmitSuccess: () => void }) {
   const [open, setOpen] = useState(false)
 
   return (
@@ -17,7 +17,10 @@ export function CreateBusButton() {
         <DialogHeader>
           <DialogTitle>Add New Bus</DialogTitle>
         </DialogHeader>
-        <CreateBusForm onSuccess={() => setOpen(false)} />
+        <CreateBusForm onSuccess={() => {
+          setOpen(false)
+          onSubmitSuccess()
+        }} />
       </DialogContent>
     </Dialog>
   )
