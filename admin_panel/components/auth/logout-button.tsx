@@ -27,11 +27,11 @@ export function LogoutButton() {
       router.push("/")
     } catch (error) {
       console.error("Logout error:", error)
-      toast({
-        title: "Logout failed",
-        description: "An error occurred during logout. Please try again.",
-        variant: "destructive",
-      })
+      // toast({
+      //   title: "Logout failed",
+      //   description: "An error occurred during logout. Please try again.",
+      //   variant: "destructive",
+      // })
     } finally {
       setIsLoading(false)
     }
