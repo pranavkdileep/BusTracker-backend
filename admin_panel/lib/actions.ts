@@ -3,6 +3,7 @@
 import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 import { SignJWT, jwtVerify } from "jose"
+import { connection } from "./db"
 
 // Types
 export type Bus = {
@@ -49,7 +50,6 @@ export type BookingId = {
 }
 
 export type User = {
-  id: string
   username: string
   role: "admin"
 }
@@ -63,12 +63,10 @@ export async function login(formData: FormData) {
   const password = formData.get("password") as string
 
   // In a real app, you would validate against a database
-  if (username === "admin" && password === "admin123") {
-    const user: User = {
-      id: "1",
-      username: "admin",
-      role: "admin",
-    }
+  const sql = "SELECT * FROM adminusers WHERE username = $1 AND password = $2"
+  const result = await connection.query(sql, [username, password])
+  if (result.rows.length > 0) {
+    const user = { username, role: "admin" }
 
     // Create JWT token
     const token = await new SignJWT({ ...user })
