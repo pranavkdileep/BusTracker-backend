@@ -1,0 +1,199 @@
+"use client"
+
+import { useState, useEffect } from "react"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
+import { Button } from "@/components/ui/button"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { useToast } from "@/components/ui/use-toast"
+import { createJourney, getBuses, type Bus } from "@/lib/actions"
+
+const formSchema = z.object({
+  name: z.string().min(1, "Journey name is required"),
+  busId: z.string().min(1, "Bus is required"),
+  startLocation: z.string().min(1, "Start location is required"),
+  endLocation: z.string().min(1, "End location is required"),
+  departureTime: z.string().min(1, "Departure time is required"),
+  estimatedArrival: z.string().min(1, "Estimated arrival time is required"),
+})
+
+type FormValues = z.infer<typeof formSchema>
+
+export function CreateJourneyForm() {
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [buses, setBuses] = useState<Bus[]>([])
+  const { toast } = useToast()
+
+  const form = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: "",
+      busId: "",
+      startLocation: "",
+      endLocation: "",
+      departureTime: "",
+      estimatedArrival: "",
+    },
+  })
+
+  useEffect(() => {
+    async function loadBuses() {
+      try {
+        const data = await getBuses()
+        setBuses(data)
+      } catch (error) {
+        console.error("Failed to load buses:", error)
+        toast({
+          title: "Error loading buses",
+          description: "There was a problem loading the bus data.",
+          variant: "destructive",
+        })
+        setBuses([])
+      }
+    }
+
+    loadBuses()
+  }, [toast])
+
+  async function onSubmit(values: FormValues) {
+    setIsSubmitting(true)
+    try {
+      await createJourney(values)
+      toast({
+        title: "Journey created",
+        description: "The journey has been created successfully.",
+      })
+      form.reset()
+    } catch (error) {
+      console.error("Failed to create journey:", error)
+      toast({
+        title: "Failed to create journey",
+        description: "There was an error creating the journey. Please try again.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Create New Journey</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Journey Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Morning Express" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="busId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Bus</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a bus" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {buses.map((bus) => (
+                        <SelectItem key={bus.id} value={bus.id}>
+                          {bus.name} ({bus.id})
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <FormField
+                control={form.control}
+                name="startLocation"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Start Location</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Station A" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="endLocation"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>End Location</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Station B" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <FormField
+                control={form.control}
+                name="departureTime"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Departure Time</FormLabel>
+                    <FormControl>
+                      <Input type="datetime-local" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="estimatedArrival"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Estimated Arrival</FormLabel>
+                    <FormControl>
+                      <Input type="datetime-local" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <Button type="submit" className="w-full" disabled={isSubmitting}>
+              {isSubmitting ? "Creating..." : "Create Journey"}
+            </Button>
+          </form>
+        </Form>
+      </CardContent>
+    </Card>
+  )
+}
+
