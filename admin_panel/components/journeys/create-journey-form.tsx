@@ -1,82 +1,99 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
-import { Button } from "@/components/ui/button"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { useToast } from "@/components/ui/use-toast"
-import { createJourney, getBuses, type Bus } from "@/lib/actions"
+import { useState, useEffect } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useToast } from "@/components/ui/use-toast";
+import { createJourney, getBuses, type Bus } from "@/lib/actions";
+import { getRoutes, Route } from "@/lib/actions";
 
 const formSchema = z.object({
   name: z.string().min(1, "Journey name is required"),
-  busId: z.string().min(1, "Bus is required"),
-  startLocation: z.string().min(1, "Start location is required"),
-  endLocation: z.string().min(1, "End location is required"),
-  departureTime: z.string().min(1, "Departure time is required"),
-  estimatedArrival: z.string().min(1, "Estimated arrival time is required"),
-})
+  busid: z.string().min(1, "Bus is required"),
+  routeid: z.string().min(1, "Route is required"),
+  departuretime: z.string().min(1, "Departure time is required"),
+  estimatedarrival: z.string().min(1, "Estimated arrival time is required"),
+});
 
-type FormValues = z.infer<typeof formSchema>
+type FormValues = z.infer<typeof formSchema>;
 
 export function CreateJourneyForm() {
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [buses, setBuses] = useState<Bus[]>([])
-  const { toast } = useToast()
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [buses, setBuses] = useState<Bus[]>([]);
+  const [routes, setRoutes] = useState<Route[]>([]);
+  const { toast } = useToast();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
-      busId: "",
-      startLocation: "",
-      endLocation: "",
-      departureTime: "",
-      estimatedArrival: "",
+      busid: "",
+      routeid: "",
+      departuretime: "",
+      estimatedarrival: "",
     },
-  })
+  });
 
   useEffect(() => {
     async function loadBuses() {
       try {
-        const data = await getBuses()
-        setBuses(data)
+        const data = await getBuses();
+        const routes = await getRoutes();
+        setRoutes(routes);
+        setBuses(data);
       } catch (error) {
-        console.error("Failed to load buses:", error)
+        console.error("Failed to load buses:", error);
         toast({
           title: "Error loading buses",
           description: "There was a problem loading the bus data.",
           variant: "destructive",
-        })
-        setBuses([])
+        });
+        setBuses([]);
       }
     }
 
-    loadBuses()
-  }, [toast])
+    loadBuses();
+  }, [toast]);
 
   async function onSubmit(values: FormValues) {
-    setIsSubmitting(true)
+    setIsSubmitting(true);
     try {
-      await createJourney(values)
+      await createJourney(values);
+      console.log("Journey created:", values);
       toast({
         title: "Journey created",
         description: "The journey has been created successfully.",
-      })
-      form.reset()
+      });
+      form.reset();
     } catch (error) {
-      console.error("Failed to create journey:", error)
+      console.error("Failed to create journey:", error);
       toast({
         title: "Failed to create journey",
-        description: "There was an error creating the journey. Please try again.",
+        description:
+          "There was an error creating the journey. Please try again.",
         variant: "destructive",
-      })
+      });
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
   }
 
@@ -104,11 +121,14 @@ export function CreateJourneyForm() {
 
             <FormField
               control={form.control}
-              name="busId"
+              name="busid"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Bus</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select a bus" />
@@ -130,27 +150,27 @@ export function CreateJourneyForm() {
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <FormField
                 control={form.control}
-                name="startLocation"
+                name="routeid"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Start Location</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Station A" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="endLocation"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>End Location</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Station B" {...field} />
-                    </FormControl>
+                    <FormLabel>Assigned Routes</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a Route" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {routes.map((rot) => (
+                          <SelectItem key={rot.id} value={rot.id}>
+                            {rot.name} ({rot.id})
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -160,7 +180,7 @@ export function CreateJourneyForm() {
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <FormField
                 control={form.control}
-                name="departureTime"
+                name="departuretime"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Departure Time</FormLabel>
@@ -174,7 +194,7 @@ export function CreateJourneyForm() {
 
               <FormField
                 control={form.control}
-                name="estimatedArrival"
+                name="estimatedarrival"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Estimated Arrival</FormLabel>
@@ -194,6 +214,5 @@ export function CreateJourneyForm() {
         </Form>
       </CardContent>
     </Card>
-  )
+  );
 }
-

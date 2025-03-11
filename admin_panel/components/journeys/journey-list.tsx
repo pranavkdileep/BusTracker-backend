@@ -17,10 +17,12 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { useToast } from "@/components/ui/use-toast"
+import { Route } from "@/lib/actions"
 
 export function JourneyList() {
   const [journeys, setJourneys] = useState<Journey[]>([])
   const [buses, setBuses] = useState<Record<string, Bus>>({})
+  const [routes, setRoutes] = useState<Record<string, Route>>({})
   const [loading, setLoading] = useState(true)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [journeyToDelete, setJourneyToDelete] = useState<string | null>(null)
@@ -38,6 +40,7 @@ export function JourneyList() {
           busesMap[bus.id] = bus
         })
         setBuses(busesMap)
+        
 
         // Then load journeys
         const journeysData = await getJourneys()
@@ -129,11 +132,11 @@ export function JourneyList() {
                 <TableRow key={journey.id}>
                   <TableCell className="font-medium">{journey.id}</TableCell>
                   <TableCell>{journey.name}</TableCell>
-                  <TableCell>{getBusName(journey.busId)}</TableCell>
+                  <TableCell>{getBusName(journey.busid)}</TableCell>
                   <TableCell>
-                    {journey.startLocation} → {journey.endLocation}
+                    {journey.routeid}
                   </TableCell>
-                  <TableCell>{formatDateTime(journey.departureTime)}</TableCell>
+                  <TableCell>{formatDateTime(journey.departuretime)}</TableCell>
                   <TableCell className="text-right">
                     <Button variant="destructive" size="sm" onClick={() => handleDeleteClick(journey.id)}>
                       <Trash2 className="h-4 w-4 mr-1" />

@@ -23,6 +23,11 @@ const navItems = [
     icon: <Users className="h-5 w-5" />,
   },
   {
+    title: "Routes",
+    href: "/dashboard/routes",
+    icon: <Map className="h-5 w-5" />,
+  },
+  {
     title: "Journeys",
     href: "/dashboard/journeys",
     icon: <Calendar className="h-5 w-5" />,

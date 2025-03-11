@@ -14,6 +14,15 @@ export type Bus = {
   speed: number
 }
 
+export type Route = {
+  id: string
+  name: string
+  source: string
+  destination: string
+  busstops: string[]
+  routefileurl: string
+}
+
 export type Conductor = {
   id: string
   name: string
@@ -24,11 +33,10 @@ export type Conductor = {
 export type Journey = {
   id: string
   name: string
-  busId: string
-  startLocation: string
-  endLocation: string
-  departureTime: string
-  estimatedArrival: string
+  busid: string
+  routeid: string
+  departuretime: string
+  estimatedarrival: string
 }
 
 export type PassengerDetails = {
@@ -44,7 +52,7 @@ export type PassengerDetails = {
 
 export type BookingId = {
   id: string
-  journeyId: string
+  journeyid: string
   passenger: PassengerDetails
   timestamp: string
 }
@@ -173,64 +181,56 @@ export async function deleteConductor(id: string): Promise<void> {
   await connection.query(sql, [id])
 }
 
+export async function createRoute(route: Route): Promise<Route> {
+  await authorize()
+  const sql = "INSERT INTO routes (id, name, source, destination, busstops, routefileurl) VALUES ($1, $2, $3, $4, $5, $6)"
+  const res = await connection.query(sql, [route.id, route.name, route.source, route.destination, route.busstops, route.routefileurl])
+  return route
+}
+export async function getRoutes(): Promise<Route[]> {
+  await authorize()
+  const sql = "SELECT * FROM routes"
+  const result = await connection.query(sql)
+  return result.rows
+}
+export async function deleteRoute(id: string): Promise<void> {
+  await authorize()
+  const sql = "DELETE FROM routes WHERE id = $1"
+  await connection.query(sql, [id])
+}
+
 // Journey Actions
 export async function createJourney(journey: Omit<Journey, "id">): Promise<Journey> {
   await authorize()
-
-  // Simulated creation
-  await new Promise((resolve) => setTimeout(resolve, 500))
-
-  return {
-    ...journey,
-    id: `journey${Math.floor(Math.random() * 1000)}`,
-  }
+  const randomId = Math.floor(Math.random() * 10000)
+  const sql = "INSERT INTO journeys (id, name, busid, routeid, departuretime, estimatedarrival) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *"
+  const res = await connection.query(sql, [randomId,journey.name, journey.busid, journey.routeid, journey.departuretime, journey.estimatedarrival])
+  return res.rows[0]
 }
 
 export async function getJourneys(): Promise<Journey[]> {
   await authorize()
-
-  // Simulated data
-  await new Promise((resolve) => setTimeout(resolve, 500))
-
-  return [
-    {
-      id: "journey1",
-      name: "Morning Express",
-      busId: "bus1",
-      startLocation: "Central Station",
-      endLocation: "Airport",
-      departureTime: "2023-06-15T08:00:00Z",
-      estimatedArrival: "2023-06-15T09:30:00Z",
-    },
-    {
-      id: "journey2",
-      name: "Evening Return",
-      busId: "bus2",
-      startLocation: "Airport",
-      endLocation: "Central Station",
-      departureTime: "2023-06-15T18:00:00Z",
-      estimatedArrival: "2023-06-15T19:30:00Z",
-    },
-  ]
+  const sql = "SELECT * FROM journeys"
+  const result = await connection.query(sql)
+  return result.rows
 }
 
 export async function deleteJourney(id: string): Promise<void> {
   await authorize()
-
-  // Simulated deletion
-  await new Promise((resolve) => setTimeout(resolve, 500))
+  const sql = "DELETE FROM journeys WHERE id = $1"
+  await connection.query(sql, [id])
 }
 
 // Booking Actions
 export async function generateBookingId(journeyId: string, passenger: PassengerDetails): Promise<BookingId> {
   await authorize()
-
-  // Simulated booking generation
-  await new Promise((resolve) => setTimeout(resolve, 500))
-
+  const randomId = Math.floor(Math.random() * 10000)
+  const id = `BK-${randomId}`
+  const sql = "INSERT INTO bookings (id, journeyid, passenger,timestamp) VALUES ($1, $2, $3,$4)"
+  const result = await connection.query(sql, [id, journeyId, passenger, new Date().toISOString()])
   return {
-    id: `BK-${Math.floor(Math.random() * 10000)}`,
-    journeyId,
+    id,
+    journeyid: journeyId,
     passenger,
     timestamp: new Date().toISOString(),
   }
@@ -238,82 +238,9 @@ export async function generateBookingId(journeyId: string, passenger: PassengerD
 
 export async function getBookings(): Promise<BookingId[]> {
   await authorize()
-
-  // Simulated data
-  await new Promise((resolve) => setTimeout(resolve, 500))
-
-  return [
-    {
-      id: "BK-12345",
-      journeyId: "journey1",
-      timestamp: "2023-06-15T10:30:00Z",
-      passenger: {
-        name: "John Doe",
-        age: 35,
-        gender: "male",
-        phoneNumber: "+1 (555) 123-4567",
-        email: "john.doe@example.com",
-        startBusStand: "Central Station",
-        droppingBusStand: "Airport Terminal",
-      },
-    },
-    {
-      id: "BK-12346",
-      journeyId: "journey2",
-      timestamp: "2023-06-15T11:45:00Z",
-      passenger: {
-        name: "Jane Smith",
-        age: 28,
-        gender: "female",
-        phoneNumber: "+1 (555) 987-6543",
-        email: "jane.smith@example.com",
-        startBusStand: "Downtown",
-        droppingBusStand: "University Campus",
-      },
-    },
-    {
-      id: "BK-12347",
-      journeyId: "journey1",
-      timestamp: "2023-06-15T13:15:00Z",
-      passenger: {
-        name: "Michael Johnson",
-        age: 42,
-        gender: "male",
-        phoneNumber: "+1 (555) 456-7890",
-        email: "michael.j@example.com",
-        startBusStand: "Shopping Mall",
-        droppingBusStand: "Central Station",
-      },
-    },
-    {
-      id: "BK-12348",
-      journeyId: "journey2",
-      timestamp: "2023-06-15T14:30:00Z",
-      passenger: {
-        name: "Sarah Williams",
-        age: 17,
-        gender: "female",
-        phoneNumber: "+1 (555) 234-5678",
-        email: "sarah.w@example.com",
-        startBusStand: "High School",
-        droppingBusStand: "Sports Complex",
-        parentPhoneNumber: "+1 (555) 876-5432",
-      },
-    },
-    {
-      id: "BK-12349",
-      journeyId: "journey1",
-      timestamp: "2023-06-15T16:00:00Z",
-      passenger: {
-        name: "Robert Brown",
-        age: 31,
-        gender: "male",
-        phoneNumber: "+1 (555) 345-6789",
-        email: "robert.b@example.com",
-        startBusStand: "Business Park",
-        droppingBusStand: "Residential Area",
-      },
-    },
-  ]
+  const sql = "SELECT * FROM bookings"
+  const result = await connection.query(sql)
+  return result.rows
 }
+
 

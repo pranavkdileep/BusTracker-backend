@@ -11,10 +11,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useToast } from "@/components/ui/use-toast"
-import { generateBookingId, getJourneys, type Journey, type BookingId } from "@/lib/actions"
+import { generateBookingId, getJourneys, type Journey, type BookingId, PassengerDetails } from "@/lib/actions"
 
 const formSchema = z.object({
-  journeyId: z.string().min(1, "Journey is required"),
+  journeyid: z.string().min(1, "Journey is required"),
   passenger: z.object({
     name: z.string().min(1, "Name is required"),
     age: z.coerce.number().min(1, "Age must be at least 1"),
@@ -40,7 +40,7 @@ export function BookingGenerator() {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      journeyId: "",
+      journeyid: "",
       passenger: {
         name: "",
         age: undefined as unknown as number,
@@ -76,7 +76,8 @@ export function BookingGenerator() {
   async function onSubmit(values: FormValues) {
     setIsSubmitting(true)
     try {
-      const booking = await generateBookingId(values.journeyId, values.passenger)
+      console.log("Generating booking ID:", values)
+      const booking = await generateBookingId(values.journeyid, values.passenger)
       setGeneratedBooking(booking)
       toast({
         title: "Booking ID generated",
@@ -112,7 +113,7 @@ export function BookingGenerator() {
               <TabsContent value="journey" className="space-y-4 pt-4">
                 <FormField
                   control={form.control}
-                  name="journeyId"
+                  name="journeyid"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Select Journey</FormLabel>
@@ -125,7 +126,7 @@ export function BookingGenerator() {
                         <SelectContent>
                           {journeys.map((journey) => (
                             <SelectItem key={journey.id} value={journey.id}>
-                              {journey.name} ({journey.startLocation} → {journey.endLocation})
+                              {journey.name}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -145,7 +146,7 @@ export function BookingGenerator() {
                       <FormItem>
                         <FormLabel>Full Name</FormLabel>
                         <FormControl>
-                          <Input placeholder="John Doe" {...field} />
+                          <Input placeholder="John Doe" {...field}  />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -159,7 +160,7 @@ export function BookingGenerator() {
                       <FormItem>
                         <FormLabel>Age</FormLabel>
                         <FormControl>
-                          <Input type="number" min="1" placeholder="25" {...field} />
+                          <Input type="number"  min="1" placeholder="25" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -283,7 +284,7 @@ export function BookingGenerator() {
                     <div className="font-medium">ID:</div>
                     <div>{generatedBooking.id}</div>
                     <div className="font-medium">Journey ID:</div>
-                    <div>{generatedBooking.journeyId}</div>
+                    <div>{generatedBooking.journeyid}</div>
                     <div className="font-medium">Generated at:</div>
                     <div>{new Date(generatedBooking.timestamp).toLocaleString()}</div>
                   </div>

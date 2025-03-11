@@ -67,7 +67,7 @@ export function BookingHistory() {
             {bookings.map((booking) => (
               <TableRow key={booking.id}>
                 <TableCell className="font-medium">{booking.id}</TableCell>
-                <TableCell>{booking.journeyId}</TableCell>
+                <TableCell>{booking.journeyid}</TableCell>
                 <TableCell>{booking.passenger.name}</TableCell>
                 <TableCell>{new Date(booking.timestamp).toLocaleString()}</TableCell>
                 <TableCell className="text-right">
@@ -88,7 +88,7 @@ export function BookingHistory() {
                       <div className="grid gap-4 py-4">
                         <div>
                           <h4 className="font-medium mb-2">Journey Information</h4>
-                          <p className="text-sm">Journey ID: {booking.journeyId}</p>
+                          <p className="text-sm">Journey ID: {booking.journeyid}</p>
                         </div>
                         <div>
                           <h4 className="font-medium mb-2">Passenger Information</h4>

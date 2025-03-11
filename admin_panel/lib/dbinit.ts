@@ -32,3 +32,39 @@ const createConductorTable = async () => {
         )
       `);
 }
+const createRouteTable = async () => {
+    await connection.query(`
+        CREATE TABLE IF NOT EXISTS routes (
+          id TEXT PRIMARY KEY,
+          name TEXT,
+          source TEXT,
+          destination TEXT,
+          busstops TEXT[],
+          routefileurl TEXT
+        )
+      `);
+}
+
+const createJourneyTable = async () => {
+  await connection.query(`
+      CREATE TABLE IF NOT EXISTS journeys (
+        id TEXT PRIMARY KEY,
+        name TEXT,
+        busid TEXT,
+        routeid TEXT,
+        departuretime TEXT,
+        estimatedarrival TEXT
+      )
+    `);
+}
+
+const createBookingTable = async () => {
+  await connection.query(`
+      CREATE TABLE IF NOT EXISTS bookings (
+        id TEXT PRIMARY KEY,
+        journeyid TEXT,
+        passenger JSON,
+        timestamp TEXT
+      )
+    `);
+}
