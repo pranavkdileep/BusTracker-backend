@@ -62,6 +62,29 @@ export type User = {
   role: "admin"
 }
 
+export type Chat = {
+  id?: string
+  senderType: "user" | "conductor"
+  senderBookingId?: string
+  senderConductorId?: string
+  receiverType: "user" | "all"
+  receiverBookingId?: string
+  receiverConductorId?: string
+  busId?: string
+  messageText: string
+  sentAt: Date
+}
+
+export type ChatResponse = {
+  id:string;
+  messageText:string;
+  sentAt:Date;
+  direction:'send' | 'received';
+  from : 'user' | 'conductor';
+  bookingId?:string;
+  conductorId?:string;
+}
+
 // JWT Configuration
 const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || "default_jwt_secret_key_change_in_production")
 
