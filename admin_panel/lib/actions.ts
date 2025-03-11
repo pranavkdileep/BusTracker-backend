@@ -64,15 +64,15 @@ export type User = {
 
 export type Chat = {
   id?: string
-  senderType: "user" | "conductor"
-  senderBookingId?: string
-  senderConductorId?: string
-  receiverType: "user" | "all"
-  receiverBookingId?: string
-  receiverConductorId?: string
-  busId?: string
-  messageText: string
-  sentAt: Date
+  sendertype: "user" | "conductor"
+  senderbookingid?: string
+  senderconductorid?: string
+  receivertype: "user" | "all"
+  receiverbookingid?: string
+  receiverconductorid?: string
+  busid?: string
+  messagetext: string
+  sentat: Date
 }
 
 export type ChatResponse = {
@@ -265,5 +265,3 @@ export async function getBookings(): Promise<BookingId[]> {
   const result = await connection.query(sql)
   return result.rows
 }
-
-

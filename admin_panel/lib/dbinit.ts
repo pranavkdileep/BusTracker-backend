@@ -68,3 +68,19 @@ const createBookingTable = async () => {
       )
     `);
 }
+
+const createChatTable = async () => {
+  await connection.query(`
+      CREATE TABLE IF NOT EXISTS messages (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    sendertype VARCHAR(50) NOT NULL CHECK (senderType IN ('user', 'conductor')),
+    senderbookingid VARCHAR(50),
+    senderconductorid VARCHAR(50),
+    receivertype VARCHAR(50) NOT NULL CHECK (receiverType IN ('user', 'all')),
+    receiverbookingid VARCHAR(50),
+    receiverconductorid VARCHAR(50),
+    busid VARCHAR(50),
+    messagetext TEXT NOT NULL,
+    sentat TIMESTAMP DEFAULT CURRENT_TIMESTAMP);
+    `);
+}
