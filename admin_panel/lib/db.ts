@@ -14,6 +14,7 @@ export const connection = new Pool(connectionConfig);
 connection.connect((err:any) => {
     if (err) {
         console.error('Connection error', err.stack);
+        console.log(connectionConfig);
     } else {
         console.log('Connected to the database');
     }

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Route Coordinates Generator</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
+    <style>
+        body { margin: 0; padding: 20px; font-family: Arial, sans-serif; }
+        .input-group { margin-bottom: 10px; }
+        input { width: 300px; padding: 5px; }
+        button { padding: 5px 10px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="input-group">
+        Start Point: <input type="text" id="start" value="10.8282,76.8272">
+    </div>
+    <div class="input-group">
+        Destination: <input type="text" id="destination">
+    </div>
+    <button onclick="calculateRoute()">Submit</button>
+    <div class="input-group" style="margin-top: 20px;">
+        Route Coordinates: 
+        <input type="text" id="coordinates" readonly>
+        <button onclick="copyCoordinates()">Copy</button>
+        <button onclick="downloadJson()">Download</button>
+    </div>
+
+    <div id="map" style="width:100%; height: 60vh; margin-top: 20px;"></div>
+
+    <script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+
+    <script>
+        var map = L.map('map').setView([10.8282, 76.8272], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+        var routingControl;
+
+        function calculateRoute() {
+            // Clear previous route
+            if(routingControl) map.removeControl(routingControl);
+
+            // Get input values
+            const start = document.getElementById('start').value.split(',');
+            const end = document.getElementById('destination').value.split(',');
+
+            // Create route
+            routingControl = L.Routing.control({
+                waypoints: [
+                    L.latLng(parseFloat(start[0]), parseFloat(start[1])),
+                    L.latLng(parseFloat(end[0]), parseFloat(end[1]))
+                ]
+            }).addTo(map);
+
+            // Handle route found
+            routingControl.on('routesfound', function(e) {
+                const routes = e.routes;
+                const coordinates = routes[0].coordinates.map(coord => 
+                    `{${coord.lat.toFixed(4)},${coord.lng.toFixed(4)}}`
+                ).join(',');
+                
+                document.getElementById('coordinates').value = coordinates;
+            });
+        }
+
+        function copyCoordinates() {
+            const coordInput = document.getElementById('coordinates');
+            coordInput.select();
+            document.execCommand('copy');
+            alert('Coordinates copied to clipboard!');
+        }
+        function downloadJson() {
+            const coordinates = '[' + document.getElementById('coordinates').value + ']';
+            console.log(coordinates)
+            const jsonString = JSON.stringify(coordinates.replace).replace('"', '');
+            const blob = new Blob([jsonString], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'coordinates.json';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+</body>
+</html>

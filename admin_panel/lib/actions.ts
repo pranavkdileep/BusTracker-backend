@@ -93,7 +93,6 @@ export async function login(formData: FormData) {
   const username = formData.get("username") as string
   const password = formData.get("password") as string
 
-  // In a real app, you would validate against a database
   const sql = "SELECT * FROM adminusers WHERE username = $1 AND password = $2"
   const result = await connection.query(sql, [username, password])
   if (result.rows.length > 0) {
@@ -265,3 +264,6 @@ export async function getBookings(): Promise<BookingId[]> {
   const result = await connection.query(sql)
   return result.rows
 }
+
+// client actions
+
