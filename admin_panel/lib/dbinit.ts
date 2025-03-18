@@ -53,7 +53,9 @@ const createJourneyTable = async () => {
         busid TEXT,
         routeid TEXT,
         departuretime TEXT,
-        estimatedarrival TEXT
+        estimatedarrival TEXT,
+        status TEXT,
+        noofstopsdone INTEGER
       )
     `);
 }
