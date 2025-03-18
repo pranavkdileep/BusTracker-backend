@@ -64,12 +64,12 @@ WHERE b.id = $1`;
         email: resjson.email,
         phone: resjson.phone,
         gender: resjson.gender,
-        busId: resjson.busId,
+        busId: resjson.busid,
         source: resjson.source,
         destination: resjson.destination,
         conductor: resjson.conductor,
-        timeD: resjson.timeD,
-        timeA: resjson.timeA,
+        timeD: resjson.timed,
+        timeA: resjson.timea,
         status: resjson.status,
         routes: routeArray
     };
