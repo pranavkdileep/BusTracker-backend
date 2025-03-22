@@ -17,7 +17,9 @@ const createBusTable = async () => {
           name TEXT,
           currentLocation TEXT,
           state TEXT,
-          speed INTEGER
+          speed INTEGER,
+          amenities TEXT[],
+          type TEXT
         )
       `);
 }
@@ -55,7 +57,10 @@ const createJourneyTable = async () => {
         departuretime TEXT,
         estimatedarrival TEXT,
         status TEXT,
-        noofstopsdone INTEGER
+        noofstopsdone INTEGER,
+        price TEXT,
+        duration TEXT,
+        seatsavailable INTEGER
       )
     `);
 }

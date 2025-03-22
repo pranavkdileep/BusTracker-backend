@@ -43,7 +43,12 @@ export async function getJourneys(source: string, destination: string,date : str
                   j.id AS id,
                   b.name AS "busName",
                   j.departuretime AS "departureTime",
-                  r.busstops AS stops
+                  r.busstops AS stops,
+                  b.type AS "busType",
+                  b.amenities AS amenities,
+                  j.seatsavailable AS "seatsAvailable",
+                  j.price AS price,
+                  j.duration AS duration
               FROM journeys j
               JOIN routes r ON j.routeid = r.id
               JOIN buses b ON j.busid = b.id
@@ -61,11 +66,11 @@ export async function getJourneys(source: string, destination: string,date : str
         busName: row.busName as string,
         departureTime: row.departureTime as string,
         stops: row.stops as string[],
-        price: `₹${Math.floor(Math.random() * 500) + 300}`,
-        duration: `${Math.floor(Math.random() * 3) + 1}h ${Math.floor(Math.random() * 45) + 15}m`,
-        amenities: await getRandomAmenities(),
-        seatsAvailable: Math.floor(Math.random() * 20) + 1,
-        busType: await getRandomBusType(),
+        price: `₹${row.price}`,
+        duration: `${row.duration}hr`,
+        amenities: row.amenities as string[],
+        seatsAvailable: row.seatsAvailable as number,
+        busType: row.busType as string,
     })));
     console.log(journeys);
       return journeys

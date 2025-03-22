@@ -112,6 +112,8 @@ export function BusList({ loadTrigger }: { loadTrigger: boolean }) {
                 <TableHead>Current Location</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Speed (km/h)</TableHead>
+                <TableHead>Amenities</TableHead>
+                <TableHead>Type</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -128,6 +130,8 @@ export function BusList({ loadTrigger }: { loadTrigger: boolean }) {
                     </div>
                   </TableCell>
                   <TableCell>{bus.speed}</TableCell>
+                  <TableCell>{bus.amenities}</TableCell>
+                  <TableCell>{bus.type}</TableCell>
                   <TableCell className="text-right">
                     <Button variant="destructive" size="sm" onClick={() => handleDeleteClick(bus.id)}>
                       <Trash2 className="h-4 w-4 mr-1" />

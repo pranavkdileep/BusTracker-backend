@@ -16,6 +16,8 @@ const formSchema = z.object({
   name: z.string().min(1, "Name is required"),
   state: z.enum(["idle", "moving", "maintenance"]),
   speed: z.coerce.number().min(0, "Speed must be a positive number"),
+  amenities: z.string().default("[Standard, AC, WiFi]"),
+  type: z.string().default("Sleeper"),
 })
 
 type FormValues = z.infer<typeof formSchema>
@@ -35,6 +37,8 @@ export function CreateBusForm({ onSuccess }: CreateBusFormProps) {
       name: "",
       state: "idle",
       speed: 0,
+      amenities: "[Standard, AC, WiFi]",
+      type: "Sleeper",
     },
   })
 
@@ -124,6 +128,34 @@ export function CreateBusForm({ onSuccess }: CreateBusFormProps) {
               <FormLabel>Speed (km/h)</FormLabel>
               <FormControl>
                 <Input type="number" min="0" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="amenities"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Amenities</FormLabel>
+              <FormControl>
+                <Input {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="type"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Bus Type</FormLabel>
+              <FormControl>
+                <Input {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

@@ -12,6 +12,8 @@ export type Bus = {
   currentLocation?: string
   state: string
   speed: number
+  amenities: string
+  type: string
 }
 
 export type Route = {
@@ -37,6 +39,9 @@ export type Journey = {
   routeid: string
   departuretime: string
   estimatedarrival: string
+  price: string
+  duration: string
+  seatsavailable: string
 }
 
 export type PassengerDetails = {
@@ -154,9 +159,9 @@ async function authorize() {
 export async function createBus(bus: Bus): Promise<Bus> {
   await authorize()
   console.log("Creating bus", bus)
-  const sql = "INSERT INTO buses (id, name, state, speed) VALUES ($1, $2, $3, $4)"
-  const res = await connection.query(sql, [bus.id, bus.name, bus.state, bus.speed])
-
+  const sql = "INSERT INTO buses (id, name, state, speed , amenities, type) VALUES ($1, $2, $3, $4, $5, $6)"
+  let amenitiesarray = bus.amenities.replace('[','').replace(']','').replace(' ','').split(',')
+  const res = await connection.query(sql, [bus.id, bus.name, bus.state, bus.speed, amenitiesarray, bus.type])
   return res.rows[0]
 }
 
@@ -225,8 +230,8 @@ export async function deleteRoute(id: string): Promise<void> {
 export async function createJourney(journey: Omit<Journey, "id">): Promise<Journey> {
   await authorize()
   const randomId = Math.floor(Math.random() * 10000)
-  const sql = "INSERT INTO journeys (id, name, busid, routeid, departuretime, estimatedarrival) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *"
-  const res = await connection.query(sql, [randomId,journey.name, journey.busid, journey.routeid, journey.departuretime, journey.estimatedarrival])
+  const sql = "INSERT INTO journeys (id, name, busid, routeid, departuretime, estimatedarrival , price , duration , seatsavailable) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *"
+  const res = await connection.query(sql, [randomId,journey.name, journey.busid, journey.routeid, journey.departuretime, journey.estimatedarrival, journey.price, journey.duration, journey.seatsavailable])
   return res.rows[0]
 }
 
