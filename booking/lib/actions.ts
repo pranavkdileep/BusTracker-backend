@@ -60,7 +60,6 @@ export async function getJourneys(source: string, destination: string,date : str
           `
       const result = await connection.query(query, [source, destination])
   
-      // Add random values for missing fields
       const journeys: Journey[] = await Promise.all(result.rows.map(async (row) => ({
         id: row.id as string,
         busName: row.busName as string,
@@ -88,18 +87,3 @@ export async function getJourneys(source: string, destination: string,date : str
     console.log(result);
     return id
   }
-  
-  // Helper function to generate random amenities
- async function getRandomAmenities() {
-    const allAmenities = ["WiFi", "USB Charging", "AC", "Water Bottle", "Snacks", "Blanket", "TV", "Reclining Seats"]
-    const numAmenities = Math.floor(Math.random() * 5) + 1
-    const shuffled = [...allAmenities].sort(() => 0.5 - Math.random())
-    return shuffled.slice(0, numAmenities)
-  }
-  
-  // Helper function to get random bus type
-async  function getRandomBusType() {
-    const busTypes = ["Standard", "Luxury", "Premium", "Sleeper", "Semi-Sleeper"]
-    return busTypes[Math.floor(Math.random() * busTypes.length)]
-  }
-  
