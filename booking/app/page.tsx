@@ -287,7 +287,7 @@ export default function BookingSystem() {
                     <div>
                       <p className="text-sm text-gray-500">From</p>
                       <p className="font-medium">
-                        {source ? allLocations.find((loc) => loc.value === source)?.label : "Source"}
+                        {source }
                       </p>
                     </div>
                   </div>
@@ -299,7 +299,7 @@ export default function BookingSystem() {
                     <div>
                       <p className="text-sm text-gray-500">To</p>
                       <p className="font-medium">
-                        {destination ? allLocations.find((loc) => loc.value === destination)?.label : "Destination"}
+                        {destination }
                       </p>
                     </div>
                   </div>
