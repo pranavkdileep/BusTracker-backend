@@ -6,6 +6,12 @@
 #include <SoftwareSerial.h>
 #include <TinyGPS++.h> 
 
+void handleRoot();
+void handleSetup();
+void handleDashboard();
+void handleReset();
+void sendUpdate();
+
 #define AP_SSID "SetupEsp"
 #define gpsRxPin D1
 #define gpsTxPin D2
@@ -13,8 +19,8 @@ SoftwareSerial neo6m(gpsTxPin, gpsRxPin);
 
 TinyGPSPlus gps;
 
-float latitude = 9.8944885;
-float longitude = 76.7132559;
+String latitude = "9.8944885";
+String longitude = "76.7132559";
 
 ESP8266WebServer server(80);
 String conductorId;
@@ -130,6 +136,8 @@ void handleDashboard() {
   html.replace("%WIFI_SSID%", wifiSSID);
   html.replace("%WIFI_STATUS%", WiFi.status() == WL_CONNECTED ? "Connected" : "Disconnected");
   html.replace("%LAST_UPDATE%", String(millis()/1000) + " seconds ago");
+  html.replace("%latitude%", latitude);
+  html.replace("%longitude%", longitude);
   
   server.send(200, "text/html", html);
 }
@@ -301,11 +309,16 @@ void sendUpdate() {
   DynamicJsonDocument doc(200);
   doc["conductor_id"] = conductorId;
   doc["password"] = conductorPass;
+  doc["latitude"] = latitude;
+  doc["longitude"] = longitude;
 
   String payload;
   serializeJson(doc, payload);
 
   int httpCode = http.POST(payload);
+  Serial.println("Latitude: " + latitude);
+  Serial.println("Longitude: " + longitude);
+  Serial.println("Payload: " + payload);
 
   if (httpCode > 0) {
     Serial.printf("HTTP POST code: %d\n", httpCode);
