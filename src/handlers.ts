@@ -1,4 +1,5 @@
 import {Request, Response } from "express";
+import { connection } from "./db";
 import fs from "fs";
 const routes = [
     {
@@ -21,15 +22,20 @@ export const getBusRoutesHandler = async (req: Request, res: Response) => {
     res.send(data);
 }
 
-export function streamBusLocation(busId: string | string[] | undefined, send: (data: any) => void) {
-    let i = 0;
-    const locations = fs.readFileSync('raw/123.json', 'utf-8');
-    const parsedLocations = locations.split('},{')
-    console.log(parsedLocations);
-    setInterval(() => {
-        const location = parsedLocations[i].replace('{', '').replace('}', '').replace('[', '').replace(']', '');
-        i++;
-        send(JSON.stringify({ busId, location }));
+export async function streamBusLocation(bookId: string | string[] | undefined, send: (data: any) => void) {
+    const sql = `SELECT 
+  b.currentLocation
+FROM buses b
+JOIN journeys j ON b.id = j.busid
+JOIN bookings bk ON j.id = bk.journeyid
+WHERE bk.id = '${bookId}';`
+
+    
+
+    setInterval(async () => {
+        let location = await connection.query(sql);
+        location = location.rows[0].currentlocation;
+        send(JSON.stringify({ bookId, location }));
         console.log('sent: ', location);
     }, 1000);
 }

@@ -17,12 +17,12 @@ router.post('/getBusRoutes',getBusRoutesHandler);
 
 export const logWebsoket =  (wss : Server) => {
     wss.on('connection', function connection(ws,req) {
-      const busId = parse(req.url!,true).query.busId;
-      console.log('connected to: %s', busId);
+      const bookId = parse(req.url!,true).query.bookId;
+      console.log('connected to: %s', bookId);
         ws.on('message', function incoming(message) {
           console.log('received: %s', message);
         });
-        streamBusLocation(busId,(data)=>{
+        streamBusLocation(bookId,(data)=>{
             ws.send(data);
         });
         
