@@ -351,12 +351,12 @@ export default function BookingSystem() {
                                   {journey.id} • {journey.busType}
                                 </p>
                               </div>
-                              <div className="flex items-center mt-2 md:mt-0">
+                              {/* <div className="flex items-center mt-2 md:mt-0">
                                 <Badge variant="outline" className="mr-2 bg-green-50 text-green-700 hover:bg-green-50">
                                   {journey.seatsAvailable} seats left
                                 </Badge>
                                 <Badge variant="secondary">{journey.price}</Badge>
-                              </div>
+                              </div> */}
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
@@ -402,10 +402,10 @@ export default function BookingSystem() {
                           </div>
 
                           <div className="bg-gray-50 p-4 flex flex-col justify-between">
-                            <div>
+                            {/* <div>
                               <p className="text-2xl font-bold text-[#3f7d58]">{journey.price}</p>
                               <p className="text-sm text-gray-500">per passenger</p>
-                            </div>
+                            </div> */}
 
                             <Button
                               className={cn(
