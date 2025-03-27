@@ -58,9 +58,7 @@ const createJourneyTable = async () => {
         estimatedarrival TEXT,
         status TEXT,
         noofstopsdone INTEGER,
-        price TEXT,
-        duration TEXT,
-        seatsavailable INTEGER
+        duration TEXT
       )
     `);
 }

@@ -32,9 +32,7 @@ const formSchema = z.object({
   routeid: z.string().min(1, "Route is required"),
   departuretime: z.string().min(1, "Departure time is required"),
   estimatedarrival: z.string().min(1, "Estimated arrival time is required"),
-  price: z.string().min(1, "Price is required"),
   duration: z.string().min(1, "Duration is required"),
-  seatsavailable: z.string().min(1, "Seats available is required"),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -53,9 +51,7 @@ export function CreateJourneyForm() {
       routeid: "",
       departuretime: "",
       estimatedarrival: "",
-      price: "",
       duration: "",
-      seatsavailable: "",
     },
   });
 
@@ -183,20 +179,7 @@ export function CreateJourneyForm() {
               />
             </div>
 
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <FormField
-                control={form.control}
-                name="price"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Price</FormLabel>
-                    <FormControl>
-                      <Input type="number" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+            
 
               <FormField
                 control={form.control}
@@ -212,20 +195,7 @@ export function CreateJourneyForm() {
                 )}
               />
 
-              <FormField
-                control={form.control}
-                name="seatsavailable"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Seats Available</FormLabel>
-                    <FormControl>
-                      <Input type="number" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-                />
-            </div>
+              
 
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <FormField

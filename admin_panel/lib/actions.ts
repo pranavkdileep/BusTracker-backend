@@ -39,9 +39,7 @@ export type Journey = {
   routeid: string
   departuretime: string
   estimatedarrival: string
-  price: string
   duration: string
-  seatsavailable: string
 }
 
 export type PassengerDetails = {
@@ -230,8 +228,8 @@ export async function deleteRoute(id: string): Promise<void> {
 export async function createJourney(journey: Omit<Journey, "id">): Promise<Journey> {
   await authorize()
   const randomId = Math.floor(Math.random() * 10000)
-  const sql = "INSERT INTO journeys (id, name, busid, routeid, departuretime, estimatedarrival , price , duration , seatsavailable) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *"
-  const res = await connection.query(sql, [randomId,journey.name, journey.busid, journey.routeid, journey.departuretime, journey.estimatedarrival, journey.price, journey.duration, journey.seatsavailable])
+  const sql = "INSERT INTO journeys (id, name, busid, routeid, departuretime, estimatedarrival, duration) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *"
+  const res = await connection.query(sql, [randomId,journey.name, journey.busid, journey.routeid, journey.departuretime, journey.estimatedarrival, journey.duration])
   return res.rows[0]
 }
 
