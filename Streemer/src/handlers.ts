@@ -22,22 +22,35 @@ export const getBusRoutesHandler = async (req: Request, res: Response) => {
     res.send(data);
 }
 
-export async function streamBusLocation(bookId: string | string[] | undefined, send: (data: any) => void) {
+export async function streamBusLocation(bookId?: string | string[] | undefined, send?: (data: any) => void) {
+    // If no send function provided, this is a no-op
+    if (!send) {
+        return () => {}; // Return empty cleanup function
+    }
+
     const sql = `SELECT 
-  b.currentLocation
-FROM buses b
-JOIN journeys j ON b.id = j.busid
-JOIN bookings bk ON j.id = bk.journeyid
-WHERE bk.id = '${bookId}';`
+      b.currentLocation
+      FROM buses b
+      JOIN journeys j ON b.id = j.busid
+      JOIN bookings bk ON j.id = bk.journeyid
+      WHERE bk.id = '${bookId}';`
 
-    
-
-    setInterval(async () => {
-        let location = await connection.query(sql);
-        location = location.rows[0].currentlocation;
-        send(JSON.stringify({ bookId, location }));
-        console.log('sent: ', location);
+    const intervalId = setInterval(async () => {
+        try {
+            let location = await connection.query(sql);
+            location = location.rows[0].currentlocation;
+            send(JSON.stringify({ bookId, location }));
+            console.log('sent: ', location);
+        } catch (error) {
+            console.error('Error streaming location:', error);
+        }
     }, 1000);
+
+    // Return a cleanup function
+    return () => {
+        console.log(`Cleaning up interval for bookId: ${bookId}`);
+        clearInterval(intervalId);
+    };
 }
 //http://207.211.188.157:4578/api ws://localhost:3000/busLocation?busId=123
 
