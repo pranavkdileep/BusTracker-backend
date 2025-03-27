@@ -114,6 +114,10 @@ export default function BookingSystem() {
     }
   }
 
+  const handleprint = () => {
+    window.print();
+  }
+
   const handleGenerateBooking = () => {
     if (!selectedJourney) {
       return
@@ -656,8 +660,8 @@ export default function BookingSystem() {
               </div>
 
               <div className="flex justify-between mt-4">
-                <Button variant="outline">Download Ticket</Button>
-                <Button className="bg-[#3f7d58] hover:bg-[#346a4a]">Print Ticket</Button>
+                {/* <Button variant="outline">Download Ticket</Button> */}
+                <Button className="bg-[#3f7d58] hover:bg-[#346a4a]" onClick={handleprint}>Print Ticket</Button>
               </div>
             </div>
           )}
